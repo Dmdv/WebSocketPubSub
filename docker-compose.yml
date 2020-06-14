@@ -1,0 +1,23 @@
+version: '3.4'
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  pubsubsignalr:
+    image: ${DOCKER_REGISTRY-}pubsubsignalr
+    build:
+      context: .
+      dockerfile: PubSubServer/Dockerfile
+    depends_on:
+      - redisserver
+
+  # Redis
+  redisserver:
+    image: redis
+    container_name: redis
+    ports:
+      - "6679:6679"
+    networks:
+      - backend

@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "PubSubSignalR";
+
+package notification;
+
+service NotificationService {
+  rpc SendNotification (NotificationRequest) returns (NotificationReply);
+}
+
+// #### Request Types ####
+
+message NotificationRequest {
+	message Topic{
+		string group = 1;
+		string sub_group = 2;
+	}
+	message Payload {
+		string message = 1;
+	}
+	Topic topic = 1;
+	Payload payload = 2;
+	string trackingId = 3;
+	google.protobuf.Timestamp time_stamp = 4;
+}
+
+// #### General Types ####
+
+message ErrorResult {
+	message Error {
+		string type = 1;
+		string message = 2;
+	}
+	repeated Error errors = 1;
+}
+
+// #### Response Types ####
+
+message NotificationReply {
+	bool is_success = 1;
+	ErrorResult error_result = 2;
+	google.protobuf.Timestamp time_stamp = 3;
+}

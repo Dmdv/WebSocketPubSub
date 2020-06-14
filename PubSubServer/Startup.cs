@@ -14,10 +14,17 @@ namespace PubSubSignalR
 {
     public class Startup
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        private readonly IConfiguration _configuration;
+
+        public Startup(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.Configure<RedisSettingsOptions>(configuration.GetSection(nameof(RedisSettingsOptions)));
+            services.Configure<RedisSettingsOptions>(_configuration.GetSection(nameof(RedisSettingsOptions)));
             services.AddGrpc();
 
             services.Configure<ForwardedHeadersOptions>(options =>
@@ -26,7 +33,7 @@ namespace PubSubSignalR
                 options.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
             });
 
-            var redisConnectionString = configuration.GetSection("RedisSettingsOptions:ConnectionString").Value;
+            var redisConnectionString = _configuration.GetSection("RedisSettingsOptions:ConnectionString").Value;
 
             services.AddSignalR(options =>
             {
@@ -53,7 +60,6 @@ namespace PubSubSignalR
             }
 
             app.UseRouting();
-            app.UseCors(builder => builder.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 
             app.UseEndpoints(endpoints =>
             {
